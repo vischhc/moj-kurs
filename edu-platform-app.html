@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Самообучение">
+<meta name="theme-color" content="#0D1117">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23161B22'/%3E%3Ctext x='50' y='66' font-size='50' text-anchor='middle' fill='%23FFB454' font-family='sans-serif' font-weight='700'%3E%E2%9C%B7%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23161B22'/%3E%3Ctext x='50' y='66' font-size='50' text-anchor='middle' fill='%23FFB454' font-family='sans-serif' font-weight='700'%3E%E2%9C%B7%3C/text%3E%3C/svg%3E">
+<title>Самообучение</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+  :root{
+    --bg:#0D1117; --card:#161B22; --surface:#1F2630; --surface-raised:#262E3A;
+    --border:#323C4A; --text:#F3F1EA; --text-dim:#9AA5B1;
+    --amber:#FFB454; --amber-dim:#8A6636; --teal:#5EEAD4; --coral:#FB7185; --indigo:#8B93FF;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);}
+  body{font-family:'Inter',sans-serif;color:var(--text);display:flex;justify-content:center;min-height:100vh;}
+  .app{width:100%;max-width:440px;min-height:100vh;background:var(--card);display:flex;flex-direction:column;position:relative;}
+  .content{flex:1;overflow-y:auto;padding-bottom:80px;}
+  .eyebrow{font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);}
+  h2.title{font-family:'Fraunces',serif;font-size:24px;font-weight:600;margin:0;}
+
+  /* Top bar (dashboard) */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 8px;}
+  .topbar .greet{font-family:'Fraunces',serif;font-size:22px;font-weight:600;}
+  .stat-pill{display:flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:5px 10px;}
+
+  .stats-row{display:flex;gap:10px;padding:12px 20px 4px;}
+
+  .section-title{padding:20px 20px 8px;font-family:'Fraunces',serif;font-size:17px;font-weight:600;}
+
+  .course-card{margin:0 20px 14px;background:var(--surface-raised);border:1px solid var(--border);border-radius:18px;padding:16px;cursor:pointer;}
+  .course-card-top{display:flex;align-items:center;gap:12px;}
+  .course-emoji{width:44px;height:44px;border-radius:12px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+  .course-info{flex:1;}
+  .course-name{font-weight:600;font-size:15px;}
+  .course-sub{color:var(--text-dim);font-size:12px;margin-top:2px;}
+  .bar-track{height:6px;border-radius:99px;background:var(--surface);margin-top:12px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--teal);border-radius:99px;transition:width .4s;}
+
+  .new-course-btn{margin:4px 20px 24px;display:flex;align-items:center;justify-content:center;gap:8px;
+    border:1.5px dashed var(--border);border-radius:18px;padding:16px;color:var(--text-dim);font-size:14px;font-weight:600;cursor:pointer;}
+  .new-course-btn:active{transform:scale(0.98);}
+
+  /* form */
+  .field-label{font-size:12px;color:var(--text-dim);margin:18px 20px 6px;display:block;}
+  .field-input{width:calc(100% - 40px);margin:0 20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:13px 14px;color:var(--text);font-size:15px;font-family:'Inter',sans-serif;}
+  .field-input:focus{outline:none;border-color:var(--teal);}
+  .chip-row{display:flex;gap:8px;margin:8px 20px 0;flex-wrap:wrap;}
+  .chip{border:1px solid var(--border);border-radius:99px;padding:7px 13px;font-size:12.5px;color:var(--text-dim);cursor:pointer;background:var(--surface);}
+  .chip.active{border-color:var(--teal);color:var(--teal);background:rgba(94,234,212,0.08);}
+
+  .btn-primary{background:var(--teal);color:#0B2620;border:none;border-radius:99px;padding:14px 0;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;width:calc(100% - 40px);margin:26px 20px 0;}
+  .btn-primary:disabled{opacity:0.4;}
+  .btn-ghost{background:transparent;color:var(--text-dim);border:1px solid var(--border);border-radius:99px;padding:10px 20px;
+    font-size:13px;display:flex;align-items:center;gap:8px;cursor:pointer;}
+
+  .back-row{display:flex;align-items:center;gap:10px;padding:18px 20px 4px;}
+  .back-btn{width:34px;height:34px;border-radius:99px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+
+  .loading-wrap{display:flex;flex-direction:column;align-items:center;padding:80px 30px;text-align:center;gap:16px;}
+  .spinner{width:34px;height:34px;border-radius:99px;border:3px solid var(--border);border-top-color:var(--teal);animation:spin 0.8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .module-block{margin:0 20px 20px;}
+  .module-title{font-weight:600;font-size:14px;margin-bottom:10px;color:var(--text-dim);}
+  .lesson-row{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:13px 14px;margin-bottom:8px;cursor:pointer;}
+  .lesson-row.locked{opacity:0.5;cursor:default;}
+  .lesson-row.done{border-color:var(--amber-dim);}
+  .lesson-icon{width:32px;height:32px;border-radius:99px;background:var(--surface-raised);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .lesson-name{font-size:14px;flex:1;}
+
+  .bottomnav{position:absolute;bottom:0;left:0;right:0;display:flex;border-top:1px solid var(--border);background:var(--card);padding:10px 0 max(10px, env(safe-area-inset-bottom));}
+  .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text-dim);cursor:pointer;font-size:11px;}
+  .nav-item.active{color:var(--teal);}
+
+  /* Lesson screens (reused pattern) */
+  .hud{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);gap:12px;}
+  .hud-stat{display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;}
+  .progress-track{flex:1;display:flex;gap:6px;}
+  .progress-dot{height:6px;flex:1;border-radius:99px;background:var(--border);transition:background .5s;}
+  .progress-dot.filled{background:var(--teal);}
+  .screen{padding:36px 24px;display:flex;flex-direction:column;align-items:center;}
+  .vocab-card{margin-top:20px;width:100%;min-height:190px;background:var(--surface-raised);border:1px solid var(--border);border-radius:20px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:28px 20px;cursor:pointer;text-align:center;transition:transform .25s;}
+  .vocab-word-row{display:flex;align-items:center;gap:12px;}
+  .vocab-word{font-family:'Fraunces',serif;font-size:28px;font-weight:600;}
+  .icon-btn{background:var(--surface);border:1px solid var(--border);border-radius:99px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+  .translation{color:var(--teal);font-weight:600;font-size:16px;}
+  .note{color:var(--text-dim);font-size:13px;max-width:260px;}
+  .hint{color:var(--text-dim);font-size:13px;}
+  .bubble-row{display:flex;align-items:flex-start;gap:12px;margin-top:16px;width:100%;}
+  .avatar{width:38px;height:38px;border-radius:99px;background:var(--amber-dim);color:var(--amber);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;flex-shrink:0;}
+  .bubble{background:var(--surface-raised);border:1px solid var(--border);border-radius:16px 16px 16px 4px;padding:12px 16px;flex:1;}
+  .bubble-line{font-family:'Fraunces',serif;font-size:17px;display:flex;align-items:center;gap:8px;}
+  .bubble-translation{background:none;border:none;color:var(--text-dim);font-size:11px;text-decoration:underline;padding:0;margin-top:4px;cursor:pointer;}
+  .options{width:100%;display:flex;flex-direction:column;gap:9px;margin-top:20px;}
+  .option-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-radius:14px;
+    background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:14px;text-align:left;cursor:pointer;font-family:'Inter',sans-serif;}
+  .option-btn.correct{border-color:var(--teal);background:rgba(94,234,212,0.08);}
+  .option-btn.incorrect{border-color:var(--coral);background:rgba(251,113,133,0.08);}
+  .quiz-prompt{font-family:'Fraunces',serif;font-size:24px;font-weight:600;margin-top:14px;}
+  .summary-icon{width:76px;height:76px;border-radius:99px;background:rgba(255,180,84,0.12);border:1px solid var(--amber-dim);display:flex;align-items:center;justify-content:center;margin-bottom:18px;}
+  .summary-stats{display:flex;gap:28px;margin-top:24px;}
+  .summary-stat{display:flex;flex-direction:column;align-items:center;}
+  .summary-stat .num{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;}
+  .summary-stat .label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;}
+
+  .badge-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px;}
+  .badge{background:var(--surface-raised);border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;}
+  .badge .emoji{font-size:26px;}
+  .badge .name{font-size:12.5px;font-weight:600;margin-top:6px;}
+  .badge.locked{opacity:0.35;}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+/* ---------- helpers / icons ---------- */
+const T="#5EEAD4", C="#FB7185";
+const svg = {
+  flame:(clr)=>`<svg width="18" height="18" viewBox="0 0 24 24" fill="${clr}" stroke="none"><path d="M12 2c1 4-4 5-4 9a4 4 0 0 0 8 0c0-1-.5-2-1-3 1 0 3 2 3 5a6 6 0 0 1-12 0c0-5 4-7 4-11 1 0 2 0 2 0z"/></svg>`,
+  star:(clr,s=15)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="${clr}" stroke="none"><polygon points="12 2 15.09 8.63 22 9.24 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.24 8.91 8.63"/></svg>`,
+  vol:()=>`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${T}" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`,
+  check:()=>`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${T}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
+  x:()=>`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${C}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  arrow:()=>`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0B2620" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`,
+  back:()=>`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F3F1EA" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`,
+  lock:()=>`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+  plus:()=>`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+  home:(clr)=>`<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="${clr}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>`,
+  user:(clr)=>`<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="${clr}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>`,
+};
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'es-ES'; u.rate = 0.92;
+  window.speechSynthesis.speak(u);
+}
+
+/* ---------- app state ---------- */
+let S = {
+  screen: 'dashboard',
+  xp: 40, streak: 7, level: 2,
+  courses: [
+    { id:'es', emoji:'🇪🇸', name:'Испанский язык', sub:'Уровень 1', progress: 0,
+      modules: [
+        { title:'Модуль 1 · Приветствия', lessons: [
+          { id:'es-1', name:'Приветствия и знакомство', status:'unlocked', built:true },
+          { id:'es-2', name:'Числа от 1 до 10', status:'locked' },
+          { id:'es-3', name:'В кафе', status:'locked' },
+        ]},
+        { title:'Модуль 2 · Повседневная жизнь', lessons: [
+          { id:'es-4', name:'Дни недели', status:'locked' },
+          { id:'es-5', name:'Экзамен модуля', status:'locked' },
+        ]},
+      ]
+    },
+  ],
+  newCourseInput: { topic:'', level:'С нуля' },
+};
+
+/* ---------- lesson content (демо: испанский, урок 1) ---------- */
+const VOCAB = [
+  { word:"Hola", translation:"Привет", note:"💡 Как волна — «о-ла», машешь рукой" },
+  { word:"Buenos días", translation:"Доброе утро", note:"💡 «Буэнос» — хорошие, «диас» — дни" },
+  { word:"¿Cómo estás?", translation:"Как ты?", note:"💡 Вопрос звучит как маленькая мелодия" },
+  { word:"Bien, gracias", translation:"Хорошо, спасибо", note:"💡 «Грасиас» похоже на «грация»" },
+];
+const DIALOGUE = { line:"¡Hola! ¿Cómo estás?", translation:"Привет! Как дела?",
+  options:[{text:"Bien, gracias. ¿Y tú?",correct:true},{text:"Me llamo Carlos.",correct:false},{text:"Buenos días, amigo.",correct:false}] };
+const QUIZ = [
+  { prompt:"Hola", choices:["Спасибо","Привет","Как дела"], answer:"Привет" },
+  { prompt:"¿Cómo estás?", choices:["Как ты?","Меня зовут","Доброе утро"], answer:"Как ты?" },
+];
+let lessonLocal = { step:0, xp:0, quizIdx:0, quizCorrect:0, quizLocked:false, activeCourse:null, activeLesson:null };
+const totalLessonSteps = VOCAB.length + 2;
+
+/* ---------- render root ---------- */
+function render(){
+  const app = document.getElementById('app');
+  let html = '';
+  if(S.screen === 'dashboard') html = renderDashboard();
+  else if(S.screen === 'newCourse') html = renderNewCourse();
+  else if(S.screen === 'generating') html = renderGenerating();
+  else if(S.screen === 'courseMap') html = renderCourseMap();
+  else if(S.screen === 'lesson') html = renderLessonRoot();
+  else if(S.screen === 'profile') html = renderProfile();
+
+  const showNav = ['dashboard','profile'].includes(S.screen);
+  app.innerHTML = `<div class="content">${html}</div>${showNav ? renderBottomNav() : ''}`;
+  attachHandlers();
+}
+
+function renderBottomNav(){
+  return `
+    <div class="bottomnav">
+      <div class="nav-item ${S.screen==='dashboard'?'active':''}" onclick="go('dashboard')">
+        ${svg.home(S.screen==='dashboard'?T:'#9AA5B1')}Главная
+      </div>
+      <div class="nav-item ${S.screen==='profile'?'active':''}" onclick="go('profile')">
+        ${svg.user(S.screen==='profile'?T:'#9AA5B1')}Профиль
+      </div>
+    </div>`;
+}
+
+/* ---------- dashboard ---------- */
+function renderDashboard(){
+  const courseCards = S.courses.map(c => {
+    const total = c.modules.reduce((a,m)=>a+m.lessons.length,0);
+    const done = c.modules.reduce((a,m)=>a+m.lessons.filter(l=>l.status==='done').length,0);
+    const pct = Math.round((done/total)*100);
+    return `
+      <div class="course-card" onclick="openCourse('${c.id}')">
+        <div class="course-card-top">
+          <div class="course-emoji">${c.emoji}</div>
+          <div class="course-info">
+            <div class="course-name">${c.name}</div>
+            <div class="course-sub">${c.sub} · ${done}/${total} уроков</div>
+          </div>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="topbar">
+      <div class="greet">Привет 👋</div>
+      <div style="display:flex;gap:8px;">
+        <div class="stat-pill" style="color:${'#FFB454'}">${svg.flame('#FFB454')}${S.streak}</div>
+        <div class="stat-pill" style="color:${'#8B93FF'}">${svg.star('#8B93FF')}${S.xp}</div>
+      </div>
+    </div>
+    <p style="padding:0 20px;color:var(--text-dim);font-size:13px;margin-top:0;">Уровень ${S.level} · продолжай, чтобы не терять стрик 🔥</p>
+
+    <div class="section-title">Мои курсы</div>
+    ${courseCards}
+    <div class="new-course-btn" onclick="go('newCourse')">${svg.plus()} Новый курс</div>
+  `;
+}
+
+/* ---------- new course form ---------- */
+function renderNewCourse(){
+  const levels = ['С нуля','Что-то знаю','Продвинутый'];
+  return `
+    <div class="back-row"><div class="back-btn" onclick="go('dashboard')">${svg.back()}</div><h2 class="title">Новый курс</h2></div>
+    <span class="field-label">Что хочешь изучить?</span>
+    <input class="field-input" id="topicInput" placeholder="Например: французский язык, гитара, Python…" value="${S.newCourseInput.topic}" oninput="S.newCourseInput.topic=this.value; updateCreateBtn()">
+    <span class="field-label">Твой текущий уровень</span>
+    <div class="chip-row">
+      ${levels.map(l=>`<div class="chip ${S.newCourseInput.level===l?'active':''}" onclick="setLevel('${l}')">${l}</div>`).join('')}
+    </div>
+    <button class="btn-primary" id="createBtn" onclick="generateCourse()" ${S.newCourseInput.topic.trim()?'':'disabled'}>Сгенерировать курс ${svg.arrow()}</button>
+  `;
+}
+function setLevel(l){ S.newCourseInput.level = l; render(); }
+function updateCreateBtn(){
+  const btn = document.getElementById('createBtn');
+  if(btn) btn.disabled = !S.newCourseInput.topic.trim();
+}
+
+function renderGenerating(){
+  return `<div class="loading-wrap"><div class="spinner"></div><p style="color:var(--text-dim);font-size:14px;">Собираю программу курса по теме «${S.newCourseInput.topic}»…</p></div>`;
+}
+
+function generateCourse(){
+  if(!S.newCourseInput.topic.trim()) return;
+  S.screen = 'generating';
+  render();
+  setTimeout(() => {
+    const topic = S.newCourseInput.topic.trim();
+    const id = 'c' + Date.now();
+    const newCourse = {
+      id, emoji: pickEmoji(topic), name: topic, sub: S.newCourseInput.level, progress: 0,
+      modules: [
+        { title:'Модуль 1 · Основы', lessons:[
+          { id:id+'-1', name:`Введение в «${topic}»`, status:'unlocked', built:false },
+          { id:id+'-2', name:'Ключевые понятия', status:'locked' },
+        ]},
+        { title:'Модуль 2 · Практика', lessons:[
+          { id:id+'-3', name:'Практическое задание', status:'locked' },
+          { id:id+'-4', name:'Экзамен модуля', status:'locked' },
+        ]},
+      ]
+    };
+    S.courses.push(newCourse);
+    S.newCourseInput = { topic:'', level:'С нуля' };
+    openCourse(id);
+  }, 1600);
+}
+function pickEmoji(topic){
+  const t = topic.toLowerCase();
+  if(t.includes('испан')) return '🇪🇸';
+  if(t.includes('франц')) return '🇫🇷';
+  if(t.includes('англ')) return '🇬🇧';
+  if(t.includes('python') || t.includes('код') || t.includes('программ')) return '🐍';
+  if(t.includes('гитар') || t.includes('музык')) return '🎸';
+  if(t.includes('истор')) return '📜';
+  if(t.includes('физ')) return '🪐';
+  return '📘';
+}
+
+/* ---------- course map ---------- */
+function openCourse(id){
+  lessonLocal.activeCourse = id;
+  S.screen = 'courseMap';
+  render();
+}
+function renderCourseMap(){
+  const course = S.courses.find(c=>c.id===lessonLocal.activeCourse);
+  const modules = course.modules.map(m => `
+    <div class="module-block">
+      <div class="module-title">${m.title}</div>
+      ${m.lessons.map(l => `
+        <div class="lesson-row ${l.status==='locked'?'locked':''} ${l.status==='done'?'done':''}" onclick="${l.status!=='locked' ? `openLesson('${course.id}','${l.id}')` : ''}">
+          <div class="lesson-icon">${l.status==='locked' ? svg.lock() : l.status==='done' ? svg.check() : svg.star('#FFB454',14)}</div>
+          <div class="lesson-name">${l.name}</div>
+        </div>`).join('')}
+    </div>`).join('');
+
+  return `
+    <div class="back-row"><div class="back-btn" onclick="go('dashboard')">${svg.back()}</div><h2 class="title">${course.emoji} ${course.name}</h2></div>
+    <p style="padding:0 20px;color:var(--text-dim);font-size:13px;">${course.sub}</p>
+    <div style="height:8px;"></div>
+    ${modules}
+  `;
+}
+
+/* ---------- lesson flow ---------- */
+function openLesson(courseId, lessonId){
+  const course = S.courses.find(c=>c.id===courseId);
+  const lesson = course.modules.flatMap(m=>m.lessons).find(l=>l.id===lessonId);
+  lessonLocal = { step:0, xp:0, quizIdx:0, quizCorrect:0, quizLocked:false, activeCourse:courseId, activeLesson:lessonId, built: lesson.built };
+  S.screen = 'lesson';
+  render();
+}
+
+function renderLessonRoot(){
+  if(!lessonLocal.built){
+    // demo placeholder for dynamically-generated lesson (не испанский урок 1)
+    return `
+      <div class="back-row"><div class="back-btn" onclick="backToMap()">${svg.back()}</div></div>
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <p style="color:var(--text-dim);font-size:14px;">Здесь система сгенерирует урок именно под эту тему — так же, как урок испанского ниже. В демо-версии полностью собран только один пример.</p>
+        <button class="btn-ghost" onclick="backToMap()">Вернуться к карте курса</button>
+      </div>`;
+  }
+  let body = '';
+  if(lessonLocal.step < VOCAB.length) body = renderVocabStep();
+  else if(lessonLocal.step === VOCAB.length) body = renderDialogueStep();
+  else if(lessonLocal.step === VOCAB.length+1) body = renderQuizStep();
+  else body = renderSummaryStep();
+  return renderLessonHud() + body;
+}
+
+function renderLessonHud(){
+  if(lessonLocal.step >= totalLessonSteps) return `<div class="back-row"></div>`;
+  let dots = '';
+  for(let i=0;i<totalLessonSteps;i++) dots += `<div class="progress-dot ${i<lessonLocal.step?'filled':''}"></div>`;
+  return `
+    <div class="hud">
+      <div class="back-btn" onclick="backToMap()" style="width:30px;height:30px;">${svg.back()}</div>
+      <div class="progress-track">${dots}</div>
+      <div class="hud-stat" style="color:#8B93FF">${svg.star('#8B93FF')}${lessonLocal.xp}</div>
+    </div>`;
+}
+
+function renderVocabStep(){
+  const item = VOCAB[lessonLocal.step];
+  return `
+    <div class="screen">
+      <p class="eyebrow">Новое слово</p>
+      <div class="vocab-card" id="vocabCard">
+        <div class="vocab-word-row">
+          <h2 class="vocab-word">${item.word}</h2>
+          <div class="icon-btn" onclick="event.stopPropagation(); speak('${item.word.replace(/'/g,"\\'")}')">${svg.vol()}</div>
+        </div>
+        <div id="vocabBack" style="display:none;flex-direction:column;align-items:center;gap:8px;">
+          <p class="translation">${item.translation}</p>
+          <p class="note">${item.note}</p>
+        </div>
+        <p class="hint" id="vocabHint">нажми, чтобы увидеть перевод</p>
+      </div>
+      <button class="btn-primary" style="margin-top:24px;" onclick="lessonAdvance(5)">Дальше ${svg.arrow()}</button>
+    </div>`;
+}
+
+function renderDialogueStep(){
+  const opts = DIALOGUE.options.map((o,i)=>`<button class="option-btn" onclick="pickDialogue(${i})">${o.text}</button>`).join('');
+  return `
+    <div class="screen" style="align-items:stretch;">
+      <p class="eyebrow">Диалог · Мадрид, улица</p>
+      <div class="bubble-row">
+        <div class="avatar">C</div>
+        <div class="bubble">
+          <div class="bubble-line">${DIALOGUE.line}<span class="icon-btn" style="width:26px;height:26px;" onclick="speak('${DIALOGUE.line.replace(/'/g,"\\'")}')">${svg.vol()}</span></div>
+          <button class="bubble-translation" onclick="this.textContent=this.textContent.includes('показать')?'${DIALOGUE.translation}':'показать перевод'">показать перевод</button>
+        </div>
+      </div>
+      <p class="eyebrow" style="margin-top:24px;margin-bottom:4px;">Твой ответ</p>
+      <div class="options">${opts}</div>
+    </div>`;
+}
+function pickDialogue(i){
+  const opts = DIALOGUE.options;
+  document.querySelectorAll('.option-btn').forEach((btn,idx)=>{
+    btn.disabled = true;
+    if(idx===i){ btn.classList.add(opts[idx].correct?'correct':'incorrect'); btn.innerHTML += opts[idx].correct?svg.check():svg.x(); }
+  });
+  setTimeout(()=>lessonAdvance(opts[i].correct?15:5), 1100);
+}
+
+function renderQuizStep(){
+  const q = QUIZ[lessonLocal.quizIdx];
+  const choices = q.choices.map((c,i)=>`<button class="option-btn" onclick="pickQuiz(${i})">${c}</button>`).join('');
+  return `
+    <div class="screen" style="align-items:stretch;">
+      <p class="eyebrow" style="text-align:center;">Мини-тест · ${lessonLocal.quizIdx+1}/${QUIZ.length}</p>
+      <h3 class="quiz-prompt" style="text-align:center;">${q.prompt}</h3>
+      <p class="hint" style="text-align:center;margin-top:4px;">выбери перевод</p>
+      <div class="options">${choices}</div>
+    </div>`;
+}
+function pickQuiz(i){
+  if(lessonLocal.quizLocked) return;
+  lessonLocal.quizLocked = true;
+  const q = QUIZ[lessonLocal.quizIdx];
+  const isCorrect = q.choices[i]===q.answer;
+  document.querySelectorAll('.option-btn').forEach((btn,idx)=>{
+    btn.disabled = true;
+    if(idx===i){ btn.classList.add(isCorrect?'correct':'incorrect'); btn.innerHTML += isCorrect?svg.check():svg.x(); }
+  });
+  if(isCorrect) lessonLocal.quizCorrect++;
+  setTimeout(()=>{
+    lessonLocal.quizIdx++;
+    lessonLocal.quizLocked = false;
+    if(lessonLocal.quizIdx < QUIZ.length){ render(); }
+    else { const gained = lessonLocal.quizCorrect*10; lessonLocal.quizIdx=0; lessonLocal.quizCorrect=0; lessonAdvance(gained); }
+  }, 850);
+}
+
+function renderSummaryStep(){
+  return `
+    <div class="screen">
+      <div class="summary-icon">${svg.star('#FFB454',34)}</div>
+      <h2 class="title">Урок пройден</h2>
+      <p style="color:var(--text-dim);font-size:14px;margin-top:6px;">Приветствия и знакомство</p>
+      <div class="summary-stats">
+        <div class="summary-stat"><span class="num" style="color:#8B93FF">+${lessonLocal.xp}</span><span class="label">XP</span></div>
+        <div class="summary-stat"><span class="num" style="color:#FFB454">${S.streak}</span><span class="label">дней стрик</span></div>
+      </div>
+      <button class="btn-ghost" style="margin-top:30px;" onclick="finishLesson()">Продолжить</button>
+    </div>`;
+}
+
+function lessonAdvance(gained){
+  lessonLocal.xp += gained;
+  lessonLocal.step += 1;
+  render();
+}
+
+function finishLesson(){
+  S.xp += lessonLocal.xp;
+  const course = S.courses.find(c=>c.id===lessonLocal.activeCourse);
+  const lessons = course.modules.flatMap(m=>m.lessons);
+  const idx = lessons.findIndex(l=>l.id===lessonLocal.activeLesson);
+  lessons[idx].status = 'done';
+  if(lessons[idx+1]) lessons[idx+1].status = 'unlocked';
+  backToMap();
+}
+function backToMap(){ S.screen = 'courseMap'; render(); }
+
+/* ---------- profile ---------- */
+function renderProfile(){
+  const badges = [
+    { emoji:'🔥', name:'7 дней стрик', got:true },
+    { emoji:'🥇', name:'Первый урок', got:true },
+    { emoji:'💯', name:'Экзамен на 100%', got:false },
+    { emoji:'📘', name:'Первый курс', got:false },
+  ];
+  return `
+    <div class="topbar"><div class="greet">Профиль</div></div>
+    <div style="display:flex;justify-content:center;gap:36px;padding:10px 20px 26px;">
+      <div style="text-align:center;"><div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;color:#8B93FF;">${S.xp}</div><div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;">XP</div></div>
+      <div style="text-align:center;"><div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;color:#FFB454;">${S.streak}</div><div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;">стрик</div></div>
+      <div style="text-align:center;"><div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;color:#5EEAD4;">${S.level}</div><div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;">уровень</div></div>
+    </div>
+    <div class="section-title" style="padding-top:0;">Достижения</div>
+    <div class="badge-grid">
+      ${badges.map(b=>`<div class="badge ${b.got?'':'locked'}"><div class="emoji">${b.emoji}</div><div class="name">${b.name}</div></div>`).join('')}
+    </div>
+  `;
+}
+
+/* ---------- nav helper ---------- */
+function go(screen){ S.screen = screen; render(); }
+function attachHandlers(){
+  const card = document.getElementById('vocabCard');
+  if(card){
+    card.addEventListener('click', function(){
+      const back = document.getElementById('vocabBack');
+      const hint = document.getElementById('vocabHint');
+      const isHidden = back.style.display === 'none';
+      back.style.display = isHidden ? 'flex' : 'none';
+      hint.style.display = isHidden ? 'none' : 'block';
+    });
+  }
+}
+
+render();
+</script>
+</body>
+</html>
